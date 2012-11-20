@@ -1,3 +1,6 @@
+#Ignore the meteor folder
+.meteor/
+
 lib-cov
 *.seed
 *.log
