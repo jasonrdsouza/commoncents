@@ -1,4 +1,4 @@
-commoncents
+CommonCents
 ===========
 
-Webapp to track shared expenses
+Webapp to track shared expenses!
