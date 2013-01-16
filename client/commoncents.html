@@ -1,0 +1,22 @@
+<head>
+  <title>CommonCents</title>
+</head>
+
+<body>
+	{{loginButtons align="right"}}
+	{{> userList}}
+</body>
+
+<template name="userList">
+	<h1>CommonCents: expense tracking webapp</h1>
+	{{#each users}}
+		{{> user}}
+	{{/each}}
+	<input type="button" value="Click" />
+</template>
+
+<template name="user">
+	<div>
+		{{username}}
+	</div>
+</template>
