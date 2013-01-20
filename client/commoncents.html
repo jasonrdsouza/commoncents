@@ -4,19 +4,21 @@
 
 <body>
 	{{loginButtons align="right"}}
-	{{> userList}}
+	<h1>CommonCents: expense tracking webapp</h1>
+	{{> myGroups}}
 </body>
 
-<template name="userList">
-	<h1>CommonCents: expense tracking webapp</h1>
-	{{#each users}}
-		{{> user}}
+<template name="myGroups">
+	{{#each groups}}
+		{{> tgroup}}
 	{{/each}}
-	<input type="button" value="Click" />
+	<input type="button" value="Add group" />
 </template>
 
-<template name="user">
+<template name="tgroup">
 	<div>
-		{{username}}
+		Group: {{title}}
+		Created by: {{createdBy}}
+		Members: {{userIdList}}
 	</div>
 </template>

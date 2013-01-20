@@ -66,68 +66,111 @@ Comments:
 	This table isn't really important right now, nor does this need to be the final design.
 	This table may just be merged as a list property on the users table.
 */
+
 // Omitting this until we implement it.
 
-/*
-======================================================================================
-transactions							
-	_id 			unique id across all transactions
-	setId			"transaction set" to which this transaction belongs
-	userOwed		userId of user who is owed <amount> by userOwing
-	userOwing		userId of user who owes <amount> to userOwed
-	amount			cost, in dollars, of transaction
-
-Comments:
-	A "transaction" is the simplest unit of debt, where A owes B some amount.
-*/
-TransactionsService = {
-
-};
 
 
-/*
-======================================================================================
-transactionSets							
-	_id				unique id across all transaction sets
-	groupId			"transaction group" to which this transaction set belongs
-	approved 		boolean true if transaction approved by all users to which it applies
-	title			title for this transaction set, i.e. "dinner at the nines"
-	description		additional info entered by creator, i.e. "trivia night was awesome!!"
-	trxDate			date this occurred
-	...
-	
-Comments:
-	This holds what can be thought of as "events" where friends create a set of debt among
-	each other because of someone paying for others.
-	We could merge the transactions table as a list property on entries of this table,
-	but I'd prefer to keep it separate for now so that aggregate operations on transactions
-	are easier. We can decide to change it later if we deem it a better idea.
-*/
-TransactionSetsService = {
-
-};
 
 
 /*
 ======================================================================================	
 transactionGroups							
-	_id 			unique id across all transaction groups
-	createdBy		user who created this group
-	dateCreated		date this was created
-	title			some sort of title for this group
-	users 			list of complex objects
-		userId			id of user who is a member of this transaction group
-		dateJoined		date this user joined this group
-		dateLeft		date this user left this group
-		permissionLevel	some identifier for a permission level about how this user
-							wants to deal with transactions in this transaction group
+	_id 				unique id across all transaction groups
+	createdBy			user who created this group
+	dateCreated			date this was created
+	title				some sort of title for this group
+	users 				list of complex objects
+		userId				id of user who is a member of this transaction group
+		dateJoined			date this user joined this group
+		dateLeft			date this user left this group
+		permissionLevel		some identifier for a permission level about how this user
+								wants to deal with transactions in this transaction group
+	transactionSets 	list of complex objects
+		title			title for this transaction set, i.e. "dinner at the nines"
+		description		additional info entered by creator, i.e. "trivia night was awesome!!"
+		trxDate			date this occurred
+		approved 		boolean true if transaction approved by all users to which it applies
+		transactions 	list of complex objects
+			userOwed		userId of user who is owed <amount> by userOwing
+			userOwing		userId of user who owes <amount> to userOwed
+			amount			cost, in dollars, of transaction
 
 Comments:
 	Table for transaction group metadata and user membership.
+
+	TransactionSets holds what can be thought of as "events" where friends create a set of debt among
+	each other because of someone paying for others.
+
+	Each transactionSet has a set of transactions.
+	A "transaction" is the simplest unit of debt, where A owes B some amount.
+
+	JC NOTE:
+	In a relational database model, there would be no "list of complex object"s as fields for a
+	transaction group, and we would have a separate table for TransactionSets, Transactions, etc.
+	I've merged these to support the mongo-style of database. 
+	Without separate tables, imagine the following query:
+	"All transactions that are in groups that I am a part of".
+	Step 1: my groups 		= query TransactionGroups for groups I am a member of.
+	Step 2: my sets 		= query TransactionSets for all sets belonging to my groups.
+	Step 3: my transactions = query Transactions for all transactions belonging to my sets.
+	This is terrible, and not to mention the list of "my sets" could get enormous, and I imagine the $in operator
+	is not that efficient in mongo; it isn't in SQL, anyway.
 */
 TransactionGroupsService = {
 
+	/* Create a new transaction group with no transaction sets.
+	 * userId: Id of the creator of the group
+	 * title: title for the group (e.g., "Cornell buddies!")
+	 * memberIds: array of userIds of members of the group. userId must be in this list.
+	 */
+	createNew: function(userId, title, memberIds) {
+		// sanity check: memberIds must include userId.
+		if(!_.any(memberIds, function(mId) { return mId === userId; })) {
+			throw new Meteor.Error(500, "The list of members for a transaction group must contain the creator of the group.");
+		}
+
+		// validation: all members must exist and be active in the Users table
+		if(Users.find({deleted: null, _id: {'$in': memberIds}}).count() !== memberIds.length) {
+			throw new Meteor.Error(500, "Every member in a new transaction group must exist.");
+		}
+
+		// validation: a group must have 2 or more people
+		if(memberIds.length < 2) {
+			throw new Meteor.Error(500, "A transaction group must contain at least 2 members.");
+		}
+
+		// validation: title must not be empty
+		if(title.length === 0) {
+			throw new Meteor.Error(500, "Transaction group title must not be empty.");
+		}
+
+		var creationDate = (new Date()).getTime(),
+			members = _.map(memberIds, function(mId) {
+				return {
+					userId: mId,
+					dateJoined: creationDate,
+					dateLeft: null,
+					permissionLevel: "all" // TODO: permissioning
+				}
+			});
+
+		TransactionGroups.insert({
+			createdBy: userId,
+			dateCreated: creationDate,
+			title: title,
+			users: members,
+			transactionSets: []
+		});
+	}
 };
+
+// TODO Remove, put in better spot
+Meteor.methods({
+	createTransactionGroup: function(title, memberIds) {
+		TransactionGroupsService.createNew(this.userId, title, memberIds);
+	}
+});
 
 
 /*
