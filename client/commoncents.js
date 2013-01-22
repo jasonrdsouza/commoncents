@@ -5,10 +5,29 @@ Meteor.startup(function() {
 	});
 });
 
+// TODO remove - for testing purposes only with calls to Meteor.call or Meteor.apply
+meteorMethodsDebug = function(error,result) { console.log(error); };
+
 Template.myGroups.groups = function() {
 	return TransactionGroups.find();
 };
+Template.myGroups.events({
+	'click #addGroup': function() {
+		var groupName = $('#addGroupName').val(),
+			memberList = [];
+		Meteor.call("createTransactionGroup", groupName, memberList, /*TODO: remove*/meteorMethodsDebug);
+	}
+});
 
-Template.tgroup.userIdList = function() {
-	return _.map(this.users, function(u) {return u.userId;});
-}
+Template.userSelector.users = function() {
+	return Users.find({uniqueName: {'$regex': new RegExp(Session.get("searchRE"))}});;
+};
+Template.userSelector.events({
+	'keyup #userTextBox': function() {
+		var typed = $('#userTextBox').val(),
+			searchRE = typed && typed.length > 0 ?
+				"^.*"+typed.toLowerCase()+".*$" :
+				".*";
+		Session.set("searchRE", searchRE);
+	}
+});

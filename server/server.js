@@ -10,7 +10,10 @@ users
 	firstName
 	lastName
 	userName
-	emails			list of {address: string, verified: boolean} objects
+	uniqueName 		lowercase version of userName for easier username uniqueness checking on db
+	emails			list of complex objects
+		address 		email address
+		verified		true if this email has been verified for the user
 	deleted			time - left the website
 	lastLogin		time - may be useful to log
 	isActivated		true if they haven't signed up on the site yet (the non-user idea)
@@ -38,11 +41,32 @@ UsersService = {
 };
 // Tell accounts to send a verification email to the user.
 Accounts.config({sendVerificationEmail: true});
+// Validate usernames.
+Accounts.validateNewUser(function(user) {
+	var MAX_USERNAME_LEN = 16;
+	if(user.username.length > MAX_USERNAME_LEN) {
+		throw new Meteor.Error(500, "Username must be no longer than 16 characters.");
+	}
+	if(user.username.search(/[^A-Za-z0-9]/) >= 0) {
+		throw new Meteor.Error(500, "Username may only contain alphanumeric characters.");
+	}
+	if(user.username.search(/[A-Za-z]/) === -1) {
+		throw new Meteor.Error(500, "Username must contain at least one letter.");
+	}
+	// TODO: validate email more throughly than Accounts currently does. "123 @gmail.com" breaks it, for example.
+	// Distinct username, ignoring case
+	if(Users.findOne({uniqueName: user.uniqueName})) {
+		throw new Meteor.Error(500, "Username already exists.");
+	}
+	return true;
+});
 // Tell accounts to create user objects that are more complex than the default.
 Accounts.onCreateUser(function(options, user) {
 	user.profile = options.profile; // Default behavior.
-	console.log(options);
+	// Lowercase-ify the email
+	_.each(user.emails, function(emailObj) { emailObj.address = emailObj.address.toLowerCase(); });
 	// Other intializations for our own setup
+	user.uniqueName = user.username.toLowerCase();
 	user.firstName = "";
 	user.lastName =  "";
 	user.deleted = null;
@@ -78,10 +102,12 @@ Comments:
 transactionGroups							
 	_id 				unique id across all transaction groups
 	createdBy			user who created this group
+	creatorDisplayName 	name of creator - cached here so we can display without a lookup on Users
 	dateCreated			date this was created
 	title				some sort of title for this group
 	users 				list of complex objects
 		userId				id of user who is a member of this transaction group
+		userDisplayName 	name of user - cached here so we can display without a lookup on Users
 		dateJoined			date this user joined this group
 		dateLeft			date this user left this group
 		permissionLevel		some identifier for a permission level about how this user
@@ -125,18 +151,27 @@ TransactionGroupsService = {
 	 * memberIds: array of userIds of members of the group. userId must be in this list.
 	 */
 	createNew: function(userId, title, memberIds) {
+		var memberNames = {},
+			distinctMemberIds;
+
 		// sanity check: memberIds must include userId.
 		if(!_.any(memberIds, function(mId) { return mId === userId; })) {
 			throw new Meteor.Error(500, "The list of members for a transaction group must contain the creator of the group.");
 		}
 
 		// validation: all members must exist and be active in the Users table
-		if(Users.find({deleted: null, _id: {'$in': memberIds}}).count() !== memberIds.length) {
-			throw new Meteor.Error(500, "Every member in a new transaction group must exist.");
-		}
+		// use this opportunity to get their usernames for caching
+		_.each(memberIds, function(mId) {
+			var memb = Users.findOne({_id: mId});
+			if (!memb) {
+				throw new Meteor.Error(500, "Every member in a new transaction group must exist.");
+			}
+			memberNames[mId] = memb.username;
+		});
+		distinctMemberIds = _.keys(memberNames);
 
 		// validation: a group must have 2 or more people
-		if(memberIds.length < 2) {
+		if(distinctMemberIds.length < 2) {
 			throw new Meteor.Error(500, "A transaction group must contain at least 2 members.");
 		}
 
@@ -146,9 +181,11 @@ TransactionGroupsService = {
 		}
 
 		var creationDate = (new Date()).getTime(),
-			members = _.map(memberIds, function(mId) {
+			creatorName = memberNames[userId],
+			members = _.map(distinctMemberIds, function(mId) {
 				return {
 					userId: mId,
+					userDisplayName: memberNames[mId],
 					dateJoined: creationDate,
 					dateLeft: null,
 					permissionLevel: "all" // TODO: permissioning
@@ -157,6 +194,7 @@ TransactionGroupsService = {
 
 		TransactionGroups.insert({
 			createdBy: userId,
+			creatorDisplayName: creatorName,
 			dateCreated: creationDate,
 			title: title,
 			users: members,

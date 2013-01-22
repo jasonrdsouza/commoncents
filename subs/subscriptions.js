@@ -16,7 +16,7 @@ Subs = {
 
 	// Allow the client to know anyone's username.
 	userData: function(self, that) {
-		return Users.find({}, {fields: {'username': 1}});
+		return Users.find({}, {fields: {'username': 1, 'uniqueName': 1}});
 	},
 
 	// All transaction groups that you are a part of.
