@@ -14,7 +14,12 @@
 	{{/each}}
 	<input id="addGroupName" type="text" placeholder="group name" />
 	<input id="addGroup" type="button" value="Add group" />
-	{{> userSelector}}
+	<div style="display:inline-block;">
+		{{> searchSelector userSelector}}
+	</div>
+	<div style="display:inline-block;">
+		{{> searchSelector userSelector2}}
+	</div>
 </template>
 
 <template name="tgroup">
@@ -35,19 +40,5 @@
 			</div>
 			{{/each}}
 		</div>
-	</div>
-</template>
-
-<template name="userSelector">
-	<div>
-		<input id="userTextBox" type="text" placeholder="enter user name" />
-	</div>
-	<div style="position:absolute;">
-		<ul style="position:relative; top: -18px; left:2px; border: 1px solid gray; overflow-y:auto; width:140px; height:100px;">
-			{{#each users}}
-			<li>{{username}}</li>
-			<input type="hidden" name="userSelect" value="{{_id}}" />
-			{{/each}}
-		</ul>
 	</div>
 </template>

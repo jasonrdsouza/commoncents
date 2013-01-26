@@ -1,3 +1,5 @@
+console.log("commoncents.js");
+
 Meteor.startup(function() {
 	// Tell accounts to ask for username and email when signing up.
 	Accounts.ui.config({
@@ -18,16 +20,5 @@ Template.myGroups.events({
 		Meteor.call("createTransactionGroup", groupName, memberList, /*TODO: remove*/meteorMethodsDebug);
 	}
 });
-
-Template.userSelector.users = function() {
-	return Users.find({uniqueName: {'$regex': new RegExp(Session.get("searchRE"))}});;
-};
-Template.userSelector.events({
-	'keyup #userTextBox': function() {
-		var typed = $('#userTextBox').val(),
-			searchRE = typed && typed.length > 0 ?
-				"^.*"+typed.toLowerCase()+".*$" :
-				".*";
-		Session.set("searchRE", searchRE);
-	}
-});
+Modules.SearchSelector("userSelector", "myGroups", Users, "_id", "username");
+Modules.SearchSelector("userSelector2", "myGroups", Users, "_id", "username");

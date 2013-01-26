@@ -1,0 +1,17 @@
+<template name="searchSelector">
+	{{#constant}}
+	<div>
+		<input class="search-selector-searchBox" type="text" placeholder="search" />
+	</div>
+	{{/constant}}
+	<div style="position:absolute;">
+		<ul style="position:relative; top: -18px; left:2px; border: 1px solid gray; overflow-y:auto; width:140px; height:100px; list-style-type:none;">
+		{{#each data}}
+		<li>
+			{{username}}
+			<input type="hidden" name="dataSelect" value="{{_id}}" />
+		</li>
+		{{/each}}
+		</ul>
+	</div>
+</template>

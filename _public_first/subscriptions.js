@@ -1,3 +1,5 @@
+console.log("subscriptions.js");
+
 Users = Meteor.users;
 TransactionGroups = new Meteor.Collection("transactionGroups");
 RequestGroups = new Meteor.Collection("requestGroups");
