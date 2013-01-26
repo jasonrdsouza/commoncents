@@ -20,5 +20,5 @@ Template.myGroups.events({
 		Meteor.call("createTransactionGroup", groupName, memberList, /*TODO: remove*/meteorMethodsDebug);
 	}
 });
-Modules.SearchSelector("userSelector", "myGroups", Users, "_id", "username");
-Modules.SearchSelector("userSelector2", "myGroups", Users, "_id", "username");
+u1 = Modules.SearchSelector("userSelector", "myGroups", Users, "_id", "username");
+u2 = Modules.SearchSelector("userSelector2", "myGroups", Users, "_id", "username");

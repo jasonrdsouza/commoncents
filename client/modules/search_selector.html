@@ -1,17 +1,25 @@
 <template name="searchSelector">
-	{{#constant}}
-	<div>
-		<input class="search-selector-searchBox" type="text" placeholder="search" />
+	<div class="search-selector-{{uniqueId}}">
+		{{#constant}}
+		<div style="width:175px;">
+			<input class="search-selector-searchbox" type="text" placeholder="search" />
+		</div>
+		{{/constant}}
+		<div class="{{resultsShowing}}" style="position:absolute; width:175px; height:100px;">
+			<div style="position:relative; top:-2px; left:3px; border:1px solid gray; overflow-y:auto;">
+				{{#each data}}
+					{{#defparent ..}}
+					{{> searchSelector_item }}
+					{{/defparent}}
+				{{/each}}
+			</div>
+		</div>
 	</div>
-	{{/constant}}
-	<div style="position:absolute;">
-		<ul style="position:relative; top: -18px; left:2px; border: 1px solid gray; overflow-y:auto; width:140px; height:100px; list-style-type:none;">
-		{{#each data}}
-		<li>
-			{{username}}
-			<input type="hidden" name="dataSelect" value="{{_id}}" />
-		</li>
-		{{/each}}
-		</ul>
+</template>
+
+<template name="searchSelector_item">
+	<div class="search-selector-li {{selected}}" style="padding:0px 5px;">
+		{{displayName}}
 	</div>
+	<input type="hidden" name="dataSelect" value="{{itemId}}" />
 </template>

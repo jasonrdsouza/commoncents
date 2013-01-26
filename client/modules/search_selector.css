@@ -1,0 +1,9 @@
+.hidden {
+	visibility: hidden;
+	display: none;
+	position: absolute;
+}
+
+.selected {
+	background-color: #FC9;
+}
