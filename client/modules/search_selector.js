@@ -3,20 +3,23 @@ console.log("search_selector.js");
 
 // Child templates
 var MASTER_TEMPLATE = "searchSelector",
-	ITEM_TEMPLATE = "searchSelector_item";
+	ITEM_TEMPLATE = "searchSelector_item",
 
 // CSS classes / prefixes
-var CONTAINER_CLASS_PREFIX = "search-selector-",
+	CONTAINER_CLASS_PREFIX = "search-selector-",
 	ITEM_CLASS = "search-selector-li",
-	SELECTED_CLASS = "selected";
+	SELECTED_CLASS = "selected",
 
 // Constant prefixes for session vars
-var SEARCH_REGEX = "search-selector-searchregex-",
+	SEARCH_REGEX = "search-selector-searchregex-",
 	SELECTED_ITEM = "search-selector-selected-",
-	RESULTS_SHOWING = "search-selector-showing-";
+	RESULTS_SHOWING = "search-selector-showing-",
+
+// Other constants
+	MAX_RESULTS_SHOWING = 4,
 
 // Helper functions for the below
-var isUpKey = function(keyCode) {
+	isUpKey = function(keyCode) {
 		return keyCode == 38;
 	},
 	isDownKey = function(keyCode) {
@@ -32,7 +35,7 @@ var isUpKey = function(keyCode) {
 		var textBoxText = $(event.target).val(),
 			typed, searchRegex;
 		typed = textBoxText + (fromKeyPress ? String.fromCharCode(event.charCode) : "");
-		searchRegex = typed.length > 0 ? "^.*"+typed.toLowerCase()+".*$" : ".*";
+		searchRegex = typed.length > 0 ? "^"+typed.toLowerCase()+".*$" : null;
 		Session.set(SEARCH_REGEX+that.uniqueId, searchRegex);
 	},
 	getContainer = function(myId) {
@@ -48,7 +51,7 @@ Template[MASTER_TEMPLATE].events({
 
 	'focus .search-selector-searchbox': function(event) {
 		$(event.currentTarget).val("");
-		Session.set(SEARCH_REGEX+this.uniqueId, ".*");
+		Session.set(SEARCH_REGEX+this.uniqueId, null);
 		Session.set(RESULTS_SHOWING+this.uniqueId, true);
 	},
 
@@ -57,6 +60,7 @@ Template[MASTER_TEMPLATE].events({
 	'keypress .search-selector-searchbox': function(event) {
 		if(event.which !== 13) {
 			fireSearch(event, this, true);
+			Session.set(RESULTS_SHOWING+this.uniqueId, true);
 		}
 		else {
 			// Enter key - find selected item and fill text box with the name for that item, and close the results
@@ -103,22 +107,30 @@ Template[MASTER_TEMPLATE].events({
 
 // Data source for displaying search results
 Template[MASTER_TEMPLATE].data = function() {
-	var query = {}, options = {sort:{}},
+	var query = {}, options = {sort:{}, limit: MAX_RESULTS_SHOWING},
 		nameField = this.nameField,
 		idField = this.idField,
 		moduleid = this.uniqueId,
-		dataColl = this.searchDataCollection;
-	// Formulate search query
-	query[nameField] = {'$regex': new RegExp(Session.get(SEARCH_REGEX+moduleid))};
-	options.sort[nameField] = 1;
+		dataColl = this.searchDataCollection,
+		regexstring = Session.get(SEARCH_REGEX+moduleid);
 
-	// If this is being called, the results are being re-rendered, so reset the selected item to the first returned result
-	var firstoptions = {sort: options.sort, limit: 1};
-	var firstresult = dataColl.findOne(query, firstoptions);
-	Session.set(SELECTED_ITEM+moduleid, firstresult ? firstresult[idField] : null);
+	if(regexstring) {
+		// Formulate search query
+		query[nameField] = {'$regex': new RegExp(regexstring)};
+		options.sort[nameField] = 1;
 
-	// Return all results.
-	return dataColl.find(query, options);
+		// If this is being called, the results are being re-rendered, so reset the selected item to the first returned result
+		var firstoptions = {sort: options.sort, limit: 1};
+		var firstresult = dataColl.findOne(query, firstoptions);
+		Session.set(SELECTED_ITEM+moduleid, firstresult ? firstresult[idField] : null);
+
+		// Return all results.
+		return dataColl.find(query, options);
+	}
+	else {
+		Session.set(SELECTED_ITEM+moduleid, null);
+		Session.set(RESULTS_SHOWING+this.uniqueId, false);
+	}
 };
 
 Template[MASTER_TEMPLATE].resultsShowing = function() {
@@ -146,7 +158,7 @@ Modules.SearchSelector = function (identifier, parentTemplate, searchDataCollect
 		idField: idField,
 		nameField: nameField
 	};
-	Session.set(SEARCH_REGEX+searchSelector.uniqueId, ".*");
+	Session.set(SEARCH_REGEX+searchSelector.uniqueId, null);
 	Session.set(RESULTS_SHOWING+searchSelector.uniqueId, false);
 	Template[parentTemplate][identifier] = searchSelector;
 

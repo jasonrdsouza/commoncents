@@ -7,3 +7,25 @@
 .selected {
 	background-color: #FC9;
 }
+
+.search-selector-resultsbox {
+	background-color: white;
+	position:relative;
+	top:-2px;
+	left:3px;
+	border:1px solid gray;
+	overflow-y:auto;
+}
+
+.search-selector-resultsbox-wrapper {
+	position:absolute;
+	width:175px;
+}
+
+.search-selector-searchbox-wrapper {
+	width:175px;
+}
+
+.search-selector-li {
+	padding:0px 5px;
+}
