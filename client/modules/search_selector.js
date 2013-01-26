@@ -47,6 +47,7 @@ Template[MASTER_TEMPLATE].events({
 	},
 
 	'focus .search-selector-searchbox': function(event) {
+		$(event.currentTarget).val("");
 		Session.set(RESULTS_SHOWING+this.uniqueId, true);
 	},
 
