@@ -1,10 +1,13 @@
 <template name="searchSelector">
 	<div class="search-selector-{{uniqueId}}">
-		{{#constant}}
 		<div class="search-selector-searchbox-wrapper">
+			{{#constant}}
 			<input class="search-selector-searchbox" type="text" placeholder="search" />
+			{{/constant}}
+			{{#if selectionMade}}
+			<div class="checkmark"/>
+			{{/if}}
 		</div>
-		{{/constant}}
 		<div class="search-selector-resultsbox-wrapper {{resultsShowing}}">
 			<div class="search-selector-resultsbox">
 				{{#each data}}
@@ -19,7 +22,8 @@
 
 <template name="searchSelector_item">
 	<div class="search-selector-li {{selected}}">
-		{{displayName}}
+		<div class="search-selector-item">{{displayName}}</div>
+		<input type="hidden" name="dataId" value="{{itemId}}" />
+		<input type="hidden" name="dataName" value="{{displayName}}" />
 	</div>
-	<input type="hidden" name="dataSelect" value="{{itemId}}" />
 </template>

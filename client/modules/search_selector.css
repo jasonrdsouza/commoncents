@@ -4,8 +4,16 @@
 	position: absolute;
 }
 
-.selected {
+.highlighted {
 	background-color: #FC9;
+}
+
+.checkmark {
+	background-image: url('/check.png');
+	background-size: contain;
+	display:inline-block;
+	width:12px;
+	height:12px;
 }
 
 .search-selector-resultsbox {
@@ -22,8 +30,8 @@
 	width:175px;
 }
 
-.search-selector-searchbox-wrapper {
-	width:175px;
+.search-selector-searchbox {
+	width:170px;
 }
 
 .search-selector-li {
