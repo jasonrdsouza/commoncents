@@ -35,8 +35,7 @@ UsersService = {
 				deleted: (new Date()).getTime()
 			}}
 		);
-	},
-
+	}
 
 };
 // Tell accounts to send a verification email to the user.

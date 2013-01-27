@@ -4,28 +4,24 @@
 
 <body>
 	{{loginButtons align="right"}}
-	<h1>CommonCents: expense tracking webapp</h1>
+	<h1 style="text-align:center">CommonCents: expense tracking webapp</h1>
 	{{> myGroups}}
 </body>
 
 <template name="myGroups">
-	{{#each groups}}
-		{{> tgroup}}
-	{{/each}}
-	<div style="clear:both;">
-		<input id="addGroupName" type="text" placeholder="group name" />
-		<input id="addGroup" type="button" value="Add group" />
+	<div style="text-align:center;">
+		{{#each groups}}
+			{{> tgroup}}
+		{{/each}}
+	<div style="clear:both;"/>
 	</div>
 	<div>
-		{{> searchSelector userSelector}}
-	</div>
-	<div>
-		{{> searchSelector userSelector2}}
+		{{> addTgroup}}
 	</div>
 </template>
 
 <template name="tgroup">
-	<div style="float:left; width: 250px; margin: 5px; padding: 5px; border-radius: 10px; border:2px solid #666; overflow:auto; background-color: #010;">
+	<div class="transaction-group" style="width: 250px; margin: 5px auto; padding: 5px; border-radius: 10px; border:2px solid #666; overflow:auto; background-color: #010;">
 		<div class="group-title" style="text-align:center; font-weight: bold; font-size: 18px; margin: 3px; cursor:pointer;">
 			{{title}}
 		</div>
@@ -41,5 +37,15 @@
 				{{/each}}
 			</div>
 		</div>
+	</div>
+</template>
+
+<template name="addTgroup">
+	<div>
+		{{> editableText groupName}}
+		<input id="addGroup" type="button" value="Add group" />
+	</div>
+	<div>
+		{{> searchSelector userSelector}}
 	</div>
 </template>
