@@ -18,6 +18,7 @@
 
 .search-selector-resultsbox {
 	background-color: white;
+	color: black;
 	position:relative;
 	top:-2px;
 	left:2px;

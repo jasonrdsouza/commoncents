@@ -1,5 +1,16 @@
 /* CSS declarations go here */
+.hidden {
+	visibility: hidden;
+	display: none;
+	position: absolute;
+}
+
 #login-buttons {
 	margin-right: 15px;
 	float: right;
+}
+
+body {
+	background-color: #000800;
+	color: #EFE;
 }

@@ -15,6 +15,16 @@ Template.myGroups.events({
 	}
 });
 
+Template.tgroup.isExpanded = function() {
+	return Session.get("group-expanded-"+this._id) ? "" : "hidden";
+};
+Template.tgroup.events({
+	'click .group-title': function() {
+		var curState = Session.get("group-expanded-"+this._id);
+		Session.set("group-expanded-"+this._id, !curState);
+	}
+});
+
 var u1 = Modules.SearchSelector.create("userSelector", "myGroups", Users, "_id", "username"),
 	u2 = Modules.SearchSelector.create("userSelector2", "myGroups", Users, "_id", "username");
 
