@@ -6,8 +6,8 @@
 }
 
 #login-buttons {
-	margin-right: 15px;
-	float: right;
+	right: 15px;
+	position:absolute;
 }
 
 body {
