@@ -1,4 +1,5 @@
 console.log("search_selector.js");
+Modules.SearchSelector = {};
 (function(){
 
 // Child templates
@@ -18,6 +19,9 @@ var MASTER_TEMPLATE = "searchSelector",
 
 // Other constants
 	MAX_RESULTS_SHOWING = 4,
+	CUSTOM_EVENTS = {
+		ITEM_SELECTED_EVENT: "search-selector-item-selected"
+	},
 
 // Helper functions for the below
 	isUpKey = function(keyCode) {
@@ -41,8 +45,17 @@ var MASTER_TEMPLATE = "searchSelector",
 		// Search was fired, so we want to show the results
 		Session.set(RESULTS_SHOWING+moduleid, true);
 	},
-	getContainer = function(myId) {
-		return $("."+CONTAINER_CLASS_PREFIX+myId);
+	getContainer = function(moduleid) {
+		return $("."+CONTAINER_CLASS_PREFIX+moduleid);
+	},
+	setSelectedItem = function(moduleid, itemId, itemName) {
+		Session.set(SELECTED_ITEM+moduleid, itemId);
+		if(itemId) {
+			getContainer(moduleid).trigger({type:CUSTOM_EVENTS.ITEM_SELECTED_EVENT, item: {id: itemId, name: itemName}});
+		}
+	},
+	getSelectedItem = function(moduleid) {
+		return Session.get(SELECTED_ITEM+moduleid);
 	};
 	
 
@@ -63,7 +76,7 @@ Template[MASTER_TEMPLATE].events({
 		if(event.which !== 13) {
 			fireSearch(event, moduleid, true);
 			// Invalidate current selection because searchterm has changed
-			Session.set(SELECTED_ITEM+moduleid, null);
+			setSelectedItem(moduleid, null);
 		}
 		else {
 			// Enter key - find selected item and fill text box with the name for that item, and close the results
@@ -75,7 +88,7 @@ Template[MASTER_TEMPLATE].events({
 					.siblings("input[name=dataName]").val());
 				getContainer(moduleid).find(".search-selector-searchbox").val(selectedName);
 				Session.set(RESULTS_SHOWING+moduleid, false);
-				Session.set(SELECTED_ITEM+moduleid, selectedId);
+				setSelectedItem(moduleid, selectedId, selectedName);
 			}
 		}
 	},
@@ -86,7 +99,7 @@ Template[MASTER_TEMPLATE].events({
 		if(isBackspaceKey(event.which)) {
 			fireSearch(event, moduleid, false);
 			// Invalidate current selection because searchterm has changed
-			Session.set(SELECTED_ITEM+moduleid, null);
+			setSelectedItem(moduleid, null);
 			return;
 		}
 		else if(isUpKey(event.which)) {
@@ -145,7 +158,7 @@ Template[MASTER_TEMPLATE].resultsShowing = function() {
 };
 
 Template[MASTER_TEMPLATE].selectionMade = function() {
-	return Session.get(SELECTED_ITEM+this.uniqueId);
+	return getSelectedItem(this.uniqueId);
 };
 
 Template[ITEM_TEMPLATE].events({
@@ -155,7 +168,7 @@ Template[ITEM_TEMPLATE].events({
 			itemName = this[this.$_.nameField];
 
 		getContainer(moduleid).find(".search-selector-searchbox").val(itemName);
-		Session.set(SELECTED_ITEM+moduleid, itemId);
+		setSelectedItem(moduleid, itemId, itemName);
 	},
 
 	'mouseover .search-selector-item': function(event) {
@@ -179,7 +192,7 @@ Template[ITEM_TEMPLATE].itemId = function() {
 };
 
 // Method to call to set up a unique instance of a search selector
-Modules.SearchSelector = function (identifier, parentTemplate, searchDataCollection, idField, nameField) {
+Modules.SearchSelector.create = function (identifier, parentTemplate, searchDataCollection, idField, nameField) {
 	var searchSelector = {
 		uniqueId: Meteor.uuid(),
 		searchDataCollection: searchDataCollection,
@@ -187,14 +200,17 @@ Modules.SearchSelector = function (identifier, parentTemplate, searchDataCollect
 		nameField: nameField
 	};
 	Session.set(SEARCH_REGEX+searchSelector.uniqueId, null);
-	Session.set(SELECTED_ITEM+searchSelector.uniqueId, null);
+	setSelectedItem(null);
 	Session.set(RESULTS_SHOWING+searchSelector.uniqueId, false);
 	Template[parentTemplate][identifier] = searchSelector;
 
 	return {
-		getSelectedItem: function() {
-			return Session.get(SELECTED_ITEM+searchSelector.uniqueId);
+		getSelectedItem: function() { return getSelectedItem(searchSelector.uniqueId); },
+		definingClass: CONTAINER_CLASS_PREFIX+searchSelector.uniqueId,
+		on: function(eventType, handler) {
+			return $("."+CONTAINER_CLASS_PREFIX+searchSelector.uniqueId).on(eventType, handler);
 		}
 	};
 };
+Modules.SearchSelector.EVENTS = CUSTOM_EVENTS;
 })();
