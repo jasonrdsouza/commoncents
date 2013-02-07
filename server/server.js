@@ -175,7 +175,7 @@ TransactionGroupsService = {
 		}
 
 		// validation: title must not be empty
-		if(title.length === 0) {
+		if(!title || title.length === 0) {
 			throw new Meteor.Error(500, "Transaction group title must not be empty.");
 		}
 

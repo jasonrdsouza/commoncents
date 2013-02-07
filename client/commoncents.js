@@ -29,20 +29,38 @@ Template.tgroup.events({
 	}
 });
 
+var e1 = Modules.EditableText.create("groupName", "addTgroup", "Click to enter group name");
+
 Template.addTgroup.events({
 	'click #addGroup': function() {
-		var groupName = $('#addGroupName').val(),
-			memberList = [];
-		Meteor.call("createTransactionGroup", groupName, memberList, /*TODO: remove*/meteorMethodsDebug);
+		var groupName = e1.getText(),
+			list = $(".addTgroup-addedUsers");
+			memberList = _.map(list.find("input[type=hidden]"), function(li) {return li.value;});
+
+		Meteor.call("createTransactionGroup", groupName, memberList, function(error, result) {
+			if(!error) {
+				list.find(".user-li").remove();
+				e1.resetState();
+			}
+		});
 	}
 });
 
 var u1 = Modules.SearchSelector.create("userSelector", "addTgroup", Users, "_id", "username");
-var e1 = Modules.EditableText.create("groupName", "addTgroup", "Click to enter group name");
 
 var registerCustomEvents = function() {
 	var userSelected = Modules.SearchSelector.EVENTS.ITEM_SELECTED_EVENT;
-	u1.on(userSelected, function(event) { alert("#1: " + event.item.name); });
+
+	u1.on(userSelected, function(event) {
+		var list = $(".addTgroup-addedUsers");
+
+		if(_.every(list.find("input[type=hidden]"), function(li) { return li.value !== event.item.id; })) {
+			list.append(Template.addedUser(event.item));
+			list.find(".delete").one("click", function(e) {
+				$(e.target).closest(".user-li").remove();
+			});
+		}
+	});
 };
 
 Meteor.startup(function() {

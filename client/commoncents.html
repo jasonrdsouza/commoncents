@@ -5,7 +5,9 @@
 <body>
 	{{loginButtons align="right"}}
 	<h1 style="text-align:center">CommonCents: expense tracking webapp</h1>
-	{{> myGroups}}
+	{{#if currentUser}}
+		{{> myGroups}}
+	{{/if}}
 </body>
 
 <template name="myGroups">
@@ -45,7 +47,16 @@
 		{{> editableText groupName}}
 		<input id="addGroup" type="button" value="Add group" />
 	</div>
+	<div class="addTgroup-addedUsers">
+	</div>
 	<div>
 		{{> searchSelector userSelector}}
+	</div>
+</template>
+
+<template name="addedUser">
+	<div class="user-li" style="width:100px;">
+		<div style="display:inline-block">{{name}}</div><div class="delete" style="float:left;"></div>
+		<input type="hidden" name="addedUser" value="{{id}}">
 	</div>
 </template>

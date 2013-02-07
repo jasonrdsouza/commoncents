@@ -1,21 +1,3 @@
-.hidden {
-	visibility: hidden;
-	display: none;
-	position: absolute;
-}
-
-.highlighted {
-	background-color: #FC9;
-}
-
-.checkmark {
-	background-image: url('/check.png');
-	background-size: contain;
-	display:inline-block;
-	width:12px;
-	height:11px;
-}
-
 .search-selector-resultsbox {
 	background-color: white;
 	color: black;

@@ -76,6 +76,10 @@ Modules.EditableText.create = function (identifier, parentTemplate, placeholderT
 		definingClass: CONTAINER_CLASS_PREFIX+moduleid,
 		getText: function() {
 			return get(moduleid, SAVED_TEXT);
+		},
+		resetState: function() {
+			set(moduleid, CURRENTLY_EDITING, false);
+			set(moduleid, SAVED_TEXT, "");
 		}
 	};
 };

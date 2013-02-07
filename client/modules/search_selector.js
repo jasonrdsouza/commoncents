@@ -82,7 +82,7 @@ Template[MASTER_TEMPLATE].events({
 			// Enter key - find selected item and fill text box with the name for that item, and close the results
 			var selectedId = Session.get(HIGHLIGHTED_ITEM+moduleid),
 				selectedName;
-			if(selectedId) {
+			if(selectedId && Session.get(RESULTS_SHOWING+moduleid)) {
 				selectedName = $.trim(getContainer(moduleid)
 					.find("input[value="+selectedId+"]")
 					.siblings("input[name=dataName]").val());
@@ -136,7 +136,7 @@ Template[MASTER_TEMPLATE].data = function() {
 
 	if(regexstring) {
 		// Formulate search query
-		query[nameField] = {'$regex': new RegExp(regexstring)};
+		query[nameField] = {'$regex': new RegExp(regexstring, "i")};
 		options.sort[nameField] = 1;
 
 		// If this is being called, the results are being re-rendered, so reset the selected item to the first returned result
