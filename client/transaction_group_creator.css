@@ -1,0 +1,56 @@
+.addTgroup-addedUsers .user-li {
+	margin: 3px;
+	padding: 3px;
+	border-radius: 5px;
+	border: 1px solid gray;
+	display:inline-block;
+	background-color:#222;
+	font-size: 14px;
+}
+
+.addTgroup-addedUsers .user-li .user-li-name {
+	display: inline-block;
+	margin-left: 5px;
+}
+
+.addTgroup-addedUsers .user-li .delete {
+	float: right;
+	margin-top: 2px;
+	margin-left: 10px;
+}
+
+.addTgroup-addedUsers {
+	text-align: center;
+}
+
+.addTgroup-wrapper #addGroup {
+	padding: 5px;
+	border-radius: 5px;
+	width: 100px;
+	background-color: #999;
+}
+
+.addTgroup-wrapper .addGroup-wrapper {
+	text-align: center;
+}
+
+.addTgroup-wrapper .addTgroup-editableText {
+	font-size: 18px;
+	font-weight: bold;
+	text-align: center;
+}
+
+.addTgroup-wrapper .addTgroup-searchSelector {
+	margin: 5px 0px;
+	margin-left: 30px;
+}
+
+.addTgroup-wrapper {
+	border: 2px solid #666;
+	border-radius: 10px;
+	padding: 5px;
+	width: 250px;
+	margin: 5px auto;
+	overflow: auto;
+	background-color: #020;
+}

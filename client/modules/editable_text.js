@@ -80,6 +80,7 @@ Modules.EditableText.create = function (identifier, parentTemplate, placeholderT
 		resetState: function() {
 			set(moduleid, CURRENTLY_EDITING, false);
 			set(moduleid, SAVED_TEXT, "");
+			getContentBox(moduleid).find("input.editable-text-input").val("");
 		}
 	};
 };

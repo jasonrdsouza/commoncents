@@ -1,0 +1,22 @@
+<template name="addTgroup">
+	<div class="addTgroup-wrapper">
+		<div class="addTgroup-editableText">
+			{{> editableText groupName}}
+		</div>
+		<div class="addTgroup-searchSelector">
+			{{> searchSelector userSelector}}
+		</div>
+		<div class="addTgroup-addedUsers">
+		</div>
+		<div class="addGroup-wrapper">
+			<input id="addGroup" type="button" value="Add group" />
+		</div>
+	</div>
+</template>
+
+<template name="addedUser">
+	<div class="user-li">
+		<div class="user-li-name">{{name}}</div><div class="delete"></div>
+		<input type="hidden" name="addedUser" value="{{id}}">
+	</div>
+</template>

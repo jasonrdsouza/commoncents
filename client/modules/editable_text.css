@@ -1,6 +1,3 @@
-.hidden {
-	visibility: hidden;
-	display: none;
-	position: absolute;
+.editable-text-placeholder {
+	color: #575;
 }
-

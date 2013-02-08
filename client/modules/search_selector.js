@@ -69,6 +69,10 @@ Template[MASTER_TEMPLATE].events({
 		fireSearch(event, this.uniqueId, false);
 	},
 
+	'click .search-selector-searchbox': function(event) {
+		$(event.target).select();
+	},
+
 	// Only captures typeable keys. i.e., those that would put a character in a textbox
 	// The one exception is the enter key (keyCode 13)
 	'keypress .search-selector-searchbox': function(event) {
@@ -89,6 +93,7 @@ Template[MASTER_TEMPLATE].events({
 				getContainer(moduleid).find(".search-selector-searchbox").val(selectedName);
 				Session.set(RESULTS_SHOWING+moduleid, false);
 				setSelectedItem(moduleid, selectedId, selectedName);
+				$(event.target).select();
 			}
 		}
 	},
@@ -192,12 +197,13 @@ Template[ITEM_TEMPLATE].itemId = function() {
 };
 
 // Method to call to set up a unique instance of a search selector
-Modules.SearchSelector.create = function (identifier, parentTemplate, searchDataCollection, idField, nameField) {
+Modules.SearchSelector.create = function (identifier, parentTemplate, searchDataCollection, idField, nameField, placeholderText) {
 	var searchSelector = {
 		uniqueId: Meteor.uuid(),
 		searchDataCollection: searchDataCollection,
 		idField: idField,
-		nameField: nameField
+		nameField: nameField,
+		placeholderText: placeholderText || "search"
 	};
 	Session.set(SEARCH_REGEX+searchSelector.uniqueId, null);
 	setSelectedItem(null);
@@ -209,6 +215,12 @@ Modules.SearchSelector.create = function (identifier, parentTemplate, searchData
 		definingClass: CONTAINER_CLASS_PREFIX+searchSelector.uniqueId,
 		on: function(eventType, handler) {
 			return $("."+CONTAINER_CLASS_PREFIX+searchSelector.uniqueId).on(eventType, handler);
+		},
+		clearText: function() {
+			Session.set(SEARCH_REGEX+searchSelector.uniqueId, null);
+			setSelectedItem(null);
+			Session.set(RESULTS_SHOWING+searchSelector.uniqueId, false);
+			getContainer(searchSelector.uniqueId).find(".search-selector-searchbox").val("");
 		}
 	};
 };

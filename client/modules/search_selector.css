@@ -11,6 +11,7 @@
 .search-selector-resultsbox-wrapper {
 	position:absolute;
 	width:175px;
+	z-index: 100001;
 }
 
 .search-selector-searchbox {
