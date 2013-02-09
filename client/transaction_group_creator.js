@@ -29,7 +29,7 @@ var registerCustomEvents = function() {
 		var list = $(".addTgroup-addedUsers");
 
 		if(_.every(list.find("input[type=hidden]"), function(li) { return li.value !== event.item.id; })) {
-			list.append(Template.addedUser(event.item)).fadeIn(400);
+			$(Template.addedUser(event.item)).hide().appendTo(list).fadeIn(400);
 			list.find(".delete").one("click", function(e) {
 				$(e.target).closest(".user-li").fadeOut(400, function() { $(this).remove(); });
 			});

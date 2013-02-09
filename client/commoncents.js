@@ -15,7 +15,8 @@ Template.tgroup.events({
 	'click .group-title': function(event) {
 		var groupid = this._id,
 			curState = Session.get("group-expanded-"+groupid),
-			slideDiv = $(event.target).closest(".transaction-group").find(".group-more-info").first();
+			parentGroup = $(event.target).closest(".transaction-group"),
+			slideDiv = parentGroup.find(".group-more-info").first();
 		// Some tiny h4x to get jquery to play nice with handlebars.
 		// If currently hidden, we will be showing, so remove hidden class placed by handlebars but keep display:none
 		// so slideToggle still thinks it is closed
@@ -26,6 +27,7 @@ Template.tgroup.events({
 		slideDiv.slideToggle(300, function() {
 			Session.set("group-expanded-"+groupid, !curState);
 		});
+
 	}
 });
 
