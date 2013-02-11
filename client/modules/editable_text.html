@@ -1,0 +1,21 @@
+<template name="editableText">
+	<div class="editable-text-{{moduleid}}">
+		<div class="{{#unless isEditing}}hidden{{/unless}}">
+			{{#constant}}
+			<input type="text" placeholder="{{placeholderText}}" class="editable-text-input">
+			{{/constant}}
+		</div>
+		<div class="editable-text-static {{#if isEditing}}hidden{{/if}}">
+			{{#if actualText}}
+				<div class="editable-text-text">
+					{{actualText}}
+				</div>
+			{{else}}
+				<div class="editable-text-placeholder">
+					{{placeholderText}}
+				</div>
+			{{/if}}
+		</div>
+		<input type="hidden" name="editable-text-value" value="{{actualText}}">
+	</div>
+</template>
