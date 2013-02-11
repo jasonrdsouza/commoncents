@@ -12,3 +12,6 @@ logs
 results
 
 npm-debug.log
+
+# Sublime text project files
+*.sublime-*
