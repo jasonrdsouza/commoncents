@@ -7,3 +7,20 @@ body {
 	background-color: #000800;
 	color: #EFE;
 }
+
+.sidebar {
+	position: absolute;
+	width: 150px;
+	height: 100%;
+	padding: 5px;
+	background-color: #001000;
+}
+
+.sidebar-tab {
+	border: 1px solid #AAEAAA;
+	background-color: #112111;
+	margin: 5px;
+	padding: 5px;
+	text-align: center;
+	border-radius: 5px;
+}

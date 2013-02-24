@@ -5,9 +5,22 @@
 <body>
 	{{loginButtons align="right"}}
 	<h1 style="text-align:center">CommonCents: expense tracking webapp</h1>
-	{{#if currentUser}}
-		{{> myGroups}}
-	{{/if}}
+	<div class="sidebar">
+		<div class="sidebar-tab">
+			Page 1
+		</div>
+		<div class="sidebar-tab">
+			Page 2
+		</div>
+		<div class="sidebar-tab">
+			Page 3
+		</div>
+	</div>
+	<div>
+		{{#if currentUser}}
+			{{> myGroups}}
+		{{/if}}
+	</div>
 </body>
 
 <template name="myGroups">
